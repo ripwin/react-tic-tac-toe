@@ -6,8 +6,7 @@ type SquareProps = {
 }
 
 function Square(props: SquareProps) {
-  const { onClick } = props;
-  const { value } = props;
+  const { onClick, value } = props;
 
   return (
     <button type="button" className="square" onClick={() => { onClick(); }}>
