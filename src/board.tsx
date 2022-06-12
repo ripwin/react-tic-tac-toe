@@ -5,7 +5,8 @@ type BoardProps = {
 };
 
 type BoardState = {
-  squares: string[]
+  squares: string[],
+  xIsNext: boolean,
 };
 
 class Board extends React.Component<BoardProps, BoardState> {
@@ -13,14 +14,16 @@ class Board extends React.Component<BoardProps, BoardState> {
     super(props);
     this.state = {
       squares: Array(9).fill(null),
+      xIsNext: true,
     };
   }
 
   handleClick(i: number) {
     const { squares } = this.state;
+    const { xIsNext } = this.state;
     const s = squares.slice();
-    s[i] = 'X';
-    this.setState({ squares: s });
+    s[i] = xIsNext ? 'X' : 'O';
+    this.setState({ squares: s, xIsNext: !xIsNext });
   }
 
   renderSquare(i: number) {
@@ -29,7 +32,8 @@ class Board extends React.Component<BoardProps, BoardState> {
   }
 
   render() {
-    const status: string = 'Next player: X';
+    const { xIsNext } = this.state;
+    const status: string = `Next player: ${xIsNext ? 'X' : 'O'}`;
 
     return (
       <div>
