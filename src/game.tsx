@@ -25,6 +25,7 @@ function calculateWinner(squares: string[]) {
 
 type GameState = {
   history: Array<string>[],
+  stepNumber: number,
   xIsNext: boolean,
 }
 
@@ -33,12 +34,14 @@ class Game extends React.Component<unknown, GameState> {
     super(props);
     this.state = {
       history: [Array(9).fill(null)],
+      stepNumber: 0,
       xIsNext: true,
     };
   }
 
   handleClick(i: number) {
-    const { history, xIsNext } = this.state;
+    const { history: h, stepNumber, xIsNext } = this.state;
+    const history = h.slice(0, stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.slice();
 
@@ -51,14 +54,32 @@ class Game extends React.Component<unknown, GameState> {
       history: history.concat([
         squares,
       ]),
+      stepNumber: history.length,
       xIsNext: !xIsNext,
     });
   }
 
+  jumpTo(step: number) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    });
+  }
+
   render() {
-    const { history, xIsNext } = this.state;
-    const current = history[history.length - 1];
+    const { history, stepNumber, xIsNext } = this.state;
+    const current = history[stepNumber];
     const winner = calculateWinner(current);
+
+    const moves = history.map((_, move) => {
+      const desc = move ? `Go to move #${move}` : 'Go to game start';
+
+      return (
+        <li>
+          <button type="button" onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      );
+    });
 
     const status: string = winner ? `Winner ${winner}` : `Next player: ${xIsNext ? 'X' : 'O'}`;
 
@@ -69,7 +90,7 @@ class Game extends React.Component<unknown, GameState> {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{/* TODO */}</ol>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
